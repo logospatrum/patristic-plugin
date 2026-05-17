@@ -1,0 +1,15 @@
+{
+  "name": "patristic",
+  "version": "0.1.0",
+  "description": "Russian Orthodox patristic corpus — semantic + lexical search, full-passage read, citations to azbyka.ru. ~2,100 works / 86 authors / 726K paragraphs / 1.98M embedding windows.",
+  "author": {
+    "name": "logospatrum",
+    "url": "https://github.com/logospatrum"
+  },
+  "mcpServers": {
+    "patristic": {
+      "type": "http",
+      "url": "https://logospatrum.com/api/mcp"
+    }
+  }
+}
