@@ -13,15 +13,33 @@ This is a theological / patristic question. Follow this two-step pattern:
    Greek / Slavonic technical terms (ὁμοούσιος, ипостась, энергия,
    обожение, исихия) verbatim.
 
-   It returns 3–8 candidates: `[{citation, snippet, author, work, relevance_hint}]`
-   — these will be in Russian (source language). It does NOT include
-   full passage text, only slugs and short snippets.
+   It returns a bullet list, one candidate per line:
+
+   ```
+   - <citation_slug> | <Russian snippet copied verbatim from the DB>
+   - <citation_slug> | <Russian snippet copied verbatim from the DB>
+   ```
+
+   Or `(no results)` if nothing matched. **It does NOT return author or
+   work display names** — those fields are intentionally not in the
+   search-tool output (any author name in teo-search's reply would be
+   invented). You resolve author/work/chapter/URL in step 2 via
+   `read_passage`.
 
 2. **Read the passages you want to quote, in the main loop.** For each
    citation you plan to use in the answer, call the MCP tool
-   `mcp__patristic__read_passage` directly with the citation slug. It
-   returns `{text, author, work_title, chapter_num, source_url, ...}`
-   — the verbatim full paragraph.
+   `mcp__patristic__read_passage` directly with the citation slug,
+   **byte-for-byte as teo-search returned it** — never abbreviate, never
+   replace underscores with hyphens, never drop the redundant-looking
+   author-slug prefix inside the work slug. If `read_passage` returns
+   `{found: false, work_exists: false}` — the search subagent probably
+   hallucinated the slug. Drop that candidate and try a different one
+   from the search list (or re-run search). Do NOT manually "fix" the
+   slug by guessing.
+
+   On success `read_passage` returns
+   `{text, author, work_title, chapter_num, chapter_title, source_url, ...}`
+   — that's where you get the human-readable attribution.
 
 3. **Quote only from `read_passage.text`.** Never quote from the `snippet`
    field of `teo-search`'s output — snippets are truncated and may have
