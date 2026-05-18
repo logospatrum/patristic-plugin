@@ -28,42 +28,59 @@ This is a theological / patristic question. Follow this two-step pattern:
    been reformulated by the search subagent. If a quoted phrase doesn't
    appear verbatim in `read_passage.text`, that's a hallucination.
 
-4. **Citation slug is a TOOL ARGUMENT, not a label for the user.** The
-   long form `author_slug/work_slug/NNNN/pX[-Y]` exists so `read_passage`
-   can find the paragraph — copy it verbatim into the tool call, never
-   simplify it. **But do NOT show this raw slug to the user as the
-   attribution line.** It's unreadable. Build the attribution from the
-   human-readable fields that `read_passage` returns:
+4. **Citation slug NEVER appears in the user-visible output.** The slug
+   (`author_slug/work_slug/NNNN/pX[-Y]`) is a tool argument and nothing
+   else. Copy it verbatim into `read_passage` calls; never paste it into
+   your reply, not in parentheses, not as a "source line", not anywhere.
+   This includes Bible slugs like `bible_sobornoe_poslanie_…/0002/p12` —
+   the user wants «James 2:12–13», not the internal slug.
 
-   - `author` — display name (e.g. «Прп. Исаак Сирин Ниневийский»)
-   - `work_title` — display title (e.g. «Избранник»)
-   - `chapter_num` + optional `chapter_title`
-   - `source_url` — the azbyka.ru link to the original page
+   Build the attribution line from the human-readable fields
+   `read_passage` returns:
 
-   ✅ GOOD (human-readable attribution):
+   - `author` — display name
+   - `work_title` — display title
+   - `chapter_num` and `chapter_title` if non-empty
+   - `source_url` — the azbyka.ru link
 
-   > «Милосердие и правосудие в одной душе — то же, что человек,
-   > который в одном доме поклоняется Богу и идолам…»
+   For Bible passages, format the attribution as the usual scriptural
+   reference (e.g. «Иак. 2:12–13», «Jas. 2:12–13», «James 2:12–13»),
+   *not* the slug.
+
+5. **The entire reply — including quotations — goes in the user's language.**
+
+   Whatever language the user asked in, that's the language of: your
+   prose, the patristic quotation itself, the author/work attribution,
+   and the chapter label. The Russian source text from `read_passage`
+   is for you, the assistant, to read and translate — it is not the
+   user's final view.
+
+   If the user asked in Russian → keep everything in Russian (the
+   corpus is already in Russian, no translation needed).
+
+   If the user asked in English (or any other non-Russian language) →
+   translate the quotation into idiomatic theological English. Mark
+   the translation honestly as a working translation when accuracy
+   matters (e.g. `(working translation)` after the first long quote).
+   Render the author's name in the user's language conventions ("St.
+   Isaac the Syrian", not «Прп. Исаак Сирин»). Always include the
+   `source_url` as a clickable link — the reader who wants the
+   verbatim Russian can click through to azbyka.ru.
+
+   ✅ GOOD (English question, English reply, translated quote, NO slug):
+
+   > "Mercy and justice in one soul are like a man who in one house
+   > worships God and idols. Mercy is opposed to justice…"
+   > *(working translation)*
    >
-   > — Прп. Исаак Сирин, *Избранник*, гл. 54 ([azbyka.ru](https://azbyka.ru/otechnik/Isaak_Sirin/izbornik/54))
+   > — St. Isaac the Syrian, *Ascetical Homilies*, ch. 54 ([azbyka.ru](https://azbyka.ru/otechnik/Isaak_Sirin/izbornik/54))
 
-   ❌ BAD (raw slug dumped on the user):
+   ❌ BAD (English question, but quote left in Russian + raw slug):
 
    > «Милосердие и правосудие в одной душе…»
-   > (isaak_sirin_ninevijskij_prepodobnyj/isaak_sirin_ninevijskij_prepodobnyj_izbornik/0054/p2)
+   > (isaak_sirin_ninevijskij_prepodobnyj/.../0054/p2)
 
-   If `chapter_title` is non-empty, include it: `гл. 54, «О милосердии»`.
-   The `source_url` is the user's path back to the original — always
-   include it as a clickable link.
-
-5. **Negative results**: if `teo-search` returns `[]`, say so honestly
-   ("в корпусе ничего не нашлось по этой теме") rather than answering
+6. **Negative results**: if `teo-search` returns `[]`, say so honestly
+   in the user's language ("nothing in the corpus on this topic" /
+   "в корпусе ничего не нашлось по этой теме") rather than answering
    from general knowledge.
-
-6. **Reply in the user's language.** Search runs in Russian, but the
-   final answer to the user goes in whatever language they asked
-   (English, Russian, etc.). Patristic quotations stay in their
-   original Russian form — if the user asked in English, give the
-   Russian quote AND a short English gloss / translation after it. Do
-   not silently translate the quote itself, the verbatim Russian is
-   the citation's value.
