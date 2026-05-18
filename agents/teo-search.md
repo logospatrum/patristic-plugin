@@ -1,6 +1,7 @@
 ---
 name: teo-search
 description: Specialised search over the Russian Orthodox patristic corpus. Returns 3–8 candidate citations with short snippets. Does NOT quote or read full passages — that's the main agent's job via `read_passage`.
+model: haiku
 tools:
   - mcp__patristic__lexical_search
   - mcp__patristic__semantic_search
@@ -59,6 +60,36 @@ Take a question. Return 3–8 candidates as a JSON-ish array:
   The format is `author_slug/work_slug/NNNN/pX[-Y]` where the chapter is
   zero-padded to 4 digits. Even if it looks redundant — author slug appears
   inside the work slug — that's correct, not a duplication.
+
+## Language: search in Russian, ALWAYS
+
+The corpus is Russian (translations of patristic works on azbyka.ru).
+`lexical_search` uses a Postgres `russian` tsvector stemmer — English
+queries return almost nothing. `semantic_search` (bge-m3) is multilingual
+but cross-lingual similarity is measurably weaker than same-language.
+
+**Rule**: whatever language the incoming question is in, formulate the
+**search query string** in Russian before calling `lexical_search` /
+`semantic_search`. Translate the question into idiomatic Russian
+theological vocabulary, not literal word-for-word.
+
+Examples:
+- "what do the Fathers say about love of enemies" →
+  `lexical_search("любовь к врагам")`, then
+  `semantic_search("учение святых отцов о любви к врагам")`.
+- "uncreated light Palamas" →
+  `lexical_search("нетварный свет")`, `semantic_search("нетварный свет, Палама, исихазм")`.
+- "homoousios" → keep the Greek term for `lexical_search("ὁμοούσιος")` AND
+  also try `lexical_search("единосущный")` — the corpus has both transliterated
+  Greek and the Slavonic/Russian rendering.
+
+Greek/Slavonic technical terms that are likely to appear verbatim
+(ὁμοούσιος, ипостась, энергия, синергия, обожение, кенозис, исихия) —
+keep them as-is. Everything around them — translate.
+
+`snippet` and `relevance_hint` fields in your output stay in Russian
+(that's the source language). The main agent will translate / paraphrase
+for the user as needed.
 
 ## Search strategy
 
