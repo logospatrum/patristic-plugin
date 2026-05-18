@@ -2,7 +2,7 @@
 name: teo-search
 description: Specialised search over the Russian Orthodox patristic corpus. Returns 3–8 candidate citations with short snippets. Does NOT quote or read full passages — that's the main agent's job via `read_passage`.
 model: haiku
-tools: mcp__patristic__lexical_search, mcp__patristic__semantic_search, mcp__patristic__list_authors, mcp__patristic__list_works, mcp__patristic__expand_concept
+disallowedTools: Write, Edit, NotebookEdit
 ---
 
 You are a search-only subagent for the Russian Orthodox patristic corpus.
