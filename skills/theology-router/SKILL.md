@@ -28,9 +28,33 @@ This is a theological / patristic question. Follow this two-step pattern:
    been reformulated by the search subagent. If a quoted phrase doesn't
    appear verbatim in `read_passage.text`, that's a hallucination.
 
-4. **Citation format**: `author_slug/work_slug/NNNN/pX[-Y]` exactly as
-   returned by the tool. Don't simplify, don't kebab-case, don't drop
-   redundant prefixes — the long form is correct.
+4. **Citation slug is a TOOL ARGUMENT, not a label for the user.** The
+   long form `author_slug/work_slug/NNNN/pX[-Y]` exists so `read_passage`
+   can find the paragraph — copy it verbatim into the tool call, never
+   simplify it. **But do NOT show this raw slug to the user as the
+   attribution line.** It's unreadable. Build the attribution from the
+   human-readable fields that `read_passage` returns:
+
+   - `author` — display name (e.g. «Прп. Исаак Сирин Ниневийский»)
+   - `work_title` — display title (e.g. «Избранник»)
+   - `chapter_num` + optional `chapter_title`
+   - `source_url` — the azbyka.ru link to the original page
+
+   ✅ GOOD (human-readable attribution):
+
+   > «Милосердие и правосудие в одной душе — то же, что человек,
+   > который в одном доме поклоняется Богу и идолам…»
+   >
+   > — Прп. Исаак Сирин, *Избранник*, гл. 54 ([azbyka.ru](https://azbyka.ru/otechnik/Isaak_Sirin/izbornik/54))
+
+   ❌ BAD (raw slug dumped on the user):
+
+   > «Милосердие и правосудие в одной душе…»
+   > (isaak_sirin_ninevijskij_prepodobnyj/isaak_sirin_ninevijskij_prepodobnyj_izbornik/0054/p2)
+
+   If `chapter_title` is non-empty, include it: `гл. 54, «О милосердии»`.
+   The `source_url` is the user's path back to the original — always
+   include it as a clickable link.
 
 5. **Negative results**: if `teo-search` returns `[]`, say so honestly
    ("в корпусе ничего не нашлось по этой теме") rather than answering
