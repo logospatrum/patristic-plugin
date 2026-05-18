@@ -8,8 +8,8 @@
     {
       "name": "patristic",
       "source": {
-        "source": "github",
-        "repo": "logospatrum/patristic-plugin"
+        "source": "url",
+        "url": "https://github.com/logospatrum/patristic-plugin.git"
       },
       "description": "Russian Orthodox patristic corpus — semantic + lexical search, full-passage read, citations to azbyka.ru. ~2,100 works / 86 authors / 726K paragraphs / 1.98M embedding windows."
     }
